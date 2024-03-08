@@ -2,6 +2,7 @@
 # Mika Erdmann, Intern at Aarhus University ENVS
 # Supervisor Katarina Elofsson
 # Started 07.03.2024
+import numpy as np
 
 
 # This script includes the different forest growth functions
@@ -9,6 +10,8 @@
 # Thomas
 
 # Read in parameters as an object
+
+# TODO: For one country or all at the same time? (Then it would be matrices and not vectors)
 class Params_Thomas:
     # I create an object that contains all of the parameters used in Thomas function. V_gross etc. contain all species.
     # In the first column, all variables have the names of the species.
@@ -20,11 +23,19 @@ class Params_Thomas:
         self.Species_names = Species_Shares[0]
 
 # TODO: Read in data as variables (maybe somewhere else?)
+
+
 # create object with data
 Thomas = Params_Thomas(V_gross=, V_pot=, V_lim=, Species_Shares=)
 
 
-def Growth_Thomas_t_s(V_t_s, params):
-    G_t_s = V_gross_s * (V_pot_s - V_t)/(V_pot_s - V_lim_s)
+def Growth_Thomas_t(V_t, Thomas):
+    # The function calculates the growth in one country in one year
+    G_t_i = np.zeros(len(Thomas.Species_Shares))
+    # Now I loop over all of the species to calculate species-specific growth in one country and add it together afterward
+    for i in range(0, len(Thomas.Species_names)):
+        V_t_i = Thomas.Species_Shares[i] * V_t          # Here I use the shares of each species in the country
+        G_t_i[i] = Thomas.V_gross[i] * (Thomas.V_pot[i] - V_t_i)/(Thomas.V_pot[i] - Thomas.V_lim[i])
+    G_t = sum(G_t_i)
 
 
