@@ -24,16 +24,20 @@ class Params_Thomas:
         self.Species_names = Species_Shares[0,]
         self.country = country_name
 
-# TODO: Read in data as variables (maybe somewhere else?)
 def read_params_one_country(country):
-    data = pd.read_excel(path_data+"\\Data Thomas.xlsx", sheet_name=1)
+    # This function reads in all of the country-specific data (species shares and gross incremement)
+    data = pd.read_excel(path_data+"\\Data Thomas.xlsx", sheet_name=1, decimal=',')
     data_c = data[data["Country"] == country]
-    Species_Shares_c = data_c.loc[:,'Total':'Other']
-    # TODO: integrate the "Total" column in the functions
-    # TODO: reshape into long
+    Species_area_c = data_c.loc[:,'Total':'Other']
+    areas_shares = np.asarray(Species_area_c.loc[:,"Beech":"Other"])/np.asarray(Species_area_c.loc[:,'Total'])
+    # I calulate the shares by calculating the share of each species of the Total area
+    # TODO: How to deal with the "other"? Is it the rest to 100%?
+    Species_Shares_c = pd.DataFrame({"Species": Species_area_c.loc[:,"Beech":"Other"].columns.tolist(), "shares": areas_shares.reshape(8)})
+    # Now I calculate the species shares of the gross increment
     V_gross_c = float(data_c.loc[:, 'Gross'])
-
-    return Species_Shares_c, V_gross_c
+    V_gross_species_c = pd.DataFrame(
+        {"Species": Species_area_c.loc[:, "Beech":"Other"].columns.tolist(), "shares": areas_shares.reshape(8) * V_gross_c})
+    return Species_Shares_c, V_gross_c, V_gross_species_c
 
 
 def Growth_Thomas_t(V_t, country):
@@ -44,19 +48,25 @@ def Growth_Thomas_t(V_t, country):
     Thomas = Params_Thomas(V_gross=V_gross_c, Species_Shares=Species_Shares_c, country_name=country)
 
     # Read in the calculated parameters V:pot and V_lim (species specific
-    data_pot_lim = pd.read_excel(path_data + "\\Data Thomas.xlsx", sheet_name=0)
-    V_pot_c =np.asarray(data_pot_lim["A", "C"])
-    V_lim_c =V_pot_c * 0.83
+    data_pot_lim = pd.read_excel(path_data + "\\Data Thomas.xlsx", sheet_name=0, decimal=',')
+    V_pot_c =np.asarray(data_pot_lim["Species", "A"])
+    V_lim_c =np.asarray([V_pot_c["Species"], V_pot_c["A"] * 0.83])
 
     # The function calculates the growth in one country in one year
+    # First, create an empty Array that will hold every species growth
     G_t_i = np.zeros(len(Thomas.Species_Shares))
-    # Now I loop over all of the species to calculate species-specific growth in one country and add it together afterward
+    # Now I loop over all of the species to calculate species-specific growth in one country
     for i in range(0, len(Thomas.Species_names)):
-        V_t_i = Thomas.Species_Shares[i] * V_t          # Here I use the shares of each species in the country
-        G_t_i[i] = Thomas.V_gross[i] * (Thomas.V_pot[i] - V_t_i)/(Thomas.V_pot[i] - Thomas.V_lim[i])
+        V_t_i = Thomas.Species_Shares[i] * V_t          # Here I use the shares of each species in the country to get the current species volume
+
+        G_t_i[i] = Thomas.V_gross[i] * (V_pot_c[i] - V_t_i)/(V_pot_c[i] - V_lim_c[i])
+
+    # Then, I add it together to calculate national growth
     G_t = sum(G_t_i)
     return G_t
 
+
+# test
 country = "Belgium"
 
-sp, Vgc = read_params_one_country(country)
+sp, Vgc, VgSc= read_params_one_country(country)
