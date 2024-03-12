@@ -58,16 +58,18 @@ def recreate_model(y_0 = 0, T = 100):
     V_0_i= read_initial_values(approach=approach)
     # Create an empty array which will be filled with each country's path. It has as columns the countrys and
     # as rows the time steps
-    V_i = np.zeros(T, len(V_0_i))
+    V_i = []
     # Now for each country, using the initial Volume for this country, the stock over time (volume/growth path) is generated
     for i in range(0, len(V_0_i)):
         c = V_0_i["Country"][i]
         V0 = V_0_i["Volume"][i]
         # V will be a column in the Dataframe with the column name c
         V = stock_over_time_i(country= c,T=T, V0=V0)
-        V_i[i] = V
-    V_i = pd.DataFrame()
-    return V_i
+        V_i.append(V.tolist())
+    V_i_df = pd.DataFrame(V_i)
+    V_i_df[0] = V_0_i["Country"]
+    V_i_df = V_i_df.transpose()
+    return V_i_df
 
 #
 # Set the approach
