@@ -94,8 +94,16 @@ def Growth_Thomas_t(V_t, country):
 
 
 # Katarina 2016
+def extract_params_Katarina2016():
+    data = pd.read_excel(path_data + "\\Data Katarina 2016.xlsx", sheet_name=0, decimal=',')
+    # extract parameters from data for the right country
+    params_c = data[data["Country"] == country]
+    m = params_c.m
+    n = params_c.n
+    k = params_c.k
+    return m,n,k
 
-def Growth_Katarina2016_t(V_t, country):
+def Growth_Katarina2016_t(V_t, country,y_t, m,n,k):
     """
         Calculate growth using the Katarina 2016 model for one timestep.
 
@@ -106,14 +114,7 @@ def Growth_Katarina2016_t(V_t, country):
         Returns:
             float: National growth.
         """
-    data = pd.read_excel(path_data + "\\Data Katarina 2016.xlsx", sheet_name=0, decimal=',')
-    # extract parameters from data for the right country
-    params_c = data[data["Country"] == country]
-    m = params_c.m
-    n = params_c.n
-    k = params_c.k
 
-    y_t = average_age_t(V_t, country, m, n, k)
     G_t = m*(V_t/y_t) - n*V_t
 
     return G_t
