@@ -19,6 +19,7 @@ Functions:
 import numpy as np
 import pandas as pd
 import scipy.special
+import scipy
 
 path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
 # This script includes the different forest growth functions
@@ -94,13 +95,13 @@ def Growth_Thomas_t(V_t, country):
 
 
 # Katarina 2016
-def extract_params_Katarina2016():
+def extract_params_Katarina2016(country):  # TODO: reduce number of calls of this functoin
     data = pd.read_excel(path_data + "\\Data Katarina 2016.xlsx", sheet_name=0, decimal=',')
     # extract parameters from data for the right country
     params_c = data[data["Country"] == country]
-    m = params_c.m[1]
-    n = params_c.n[1]
-    k = params_c.k[1]
+    m = params_c.m.iloc[0]
+    n = params_c.n.iloc[0]
+    k = params_c.k.iloc[0]
     return m,n,k
 
 def Growth_Katarina2016_t(V_t, country,y_t, m,n,k):
@@ -155,10 +156,14 @@ def optimise_age_t(V_t, m,n,k):
         return func(x, Z_t=V_t, m=m, n=n, k= k)
 
     bounds = scipy.optimize.Bounds([2],[500])
-    res = scipy.optimize.root_scalar(wrapped_func_wo_args, method="newton",x0=50, maxiter=1000)
-    y_t = res
+    res = scipy.optimize.root_scalar(wrapped_func_wo_args, method="secant",x0=150, x1=27,xtol=0.0001)
+    y_t = res.root # TODO: either there is one numerical error with one iteration or when T > 50 somewhere convergence stops
     success = np.isclose(wrapped_func_wo_args(y_t), [0.0])
-    return y_t
+    if success == False:
+        Warning("Warning: not close to zero")
+        return y_t
+    else:
+        return y_t
 
 
 
