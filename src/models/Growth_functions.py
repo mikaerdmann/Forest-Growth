@@ -98,9 +98,9 @@ def extract_params_Katarina2016():
     data = pd.read_excel(path_data + "\\Data Katarina 2016.xlsx", sheet_name=0, decimal=',')
     # extract parameters from data for the right country
     params_c = data[data["Country"] == country]
-    m = params_c.m
-    n = params_c.n
-    k = params_c.k
+    m = params_c.m[1]
+    n = params_c.n[1]
+    k = params_c.k[1]
     return m,n,k
 
 def Growth_Katarina2016_t(V_t, country,y_t, m,n,k):
@@ -148,10 +148,17 @@ def optimise_age_t(V_t, m,n,k):
            None
        """
     # this function must be put in optimiser, let y vary and restricted to positive numbers
-    def func(Z_t, m, n, k):
-        return k**(y)**m * np.exp(-n*y) - Z_t
-    y = scipy.optimize.minimize(func, x0 = 100, bounds=(0))
+    def func(x,Z_t, m,n,k):
+        return k * np.power(x,m) * np.exp(-n*x) - Z_t
 
+    def wrapped_func_wo_args(x):
+        return func(x, Z_t=V_t, m=m, n=n, k= k)
+
+    bounds = scipy.optimize.Bounds([2],[500])
+    res = scipy.optimize.root_scalar(wrapped_func_wo_args, method="newton",x0=50, maxiter=1000)
+    y_t = res
+    success = np.isclose(wrapped_func_wo_args(y_t), [0.0])
+    return y_t
 
 
 

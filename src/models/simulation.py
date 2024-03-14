@@ -78,14 +78,14 @@ def stock_over_time_i(country, T, V0, y_0 = 0):
     V_path = np.zeros(T)
     V_path[0] = V_t
 
-    # TODO: insert here a first step if approach is Katharina 2016
+    # insert here a first step if approach is Katharina 2016
     if approach == "Katharina2016":
         m, n, k = fc.extract_params_Katarina2016()
         y_t = y_0
         V_t = current_stock_i(V_t, country, y_t)
         V_path[0]= V_t
         for t in range(1,T):
-            y_t = fc.average_age_t(V_t, country, m, n, k)
+            y_t = fc.optimise_age_t(V_t, country, m, n, k)
             V_t = current_stock_i(V_t, country, y_t)
             V_path[t] = V_t
         return V_path
@@ -98,21 +98,17 @@ def stock_over_time_i(country, T, V0, y_0 = 0):
 
 
 
-# TODO:
-# Read in starting stocks for each country and create country loop
-
-
 def calculate_y_0s_other(V_0_i):
     """for each country in the dataset calculate the average age based on Katarina 2016 approach
     """
     # read in for each country
     y_0_i_lst = []
     for i in range(0,len(V_0_i)):
-        V_0 = V_0_i[i]
+        V_0 = V_0_i["Volume"][i]
         m,n,k = fc.extract_params_Katarina2016()
-        y_0 = fc.average_age_t(V_0, m, n, k)
-        y_0_i_lst[i] = y_0
-    y_0_i = pd.DataFrame({"Country":V_0_i["Country"], "Model age": y_0_i_lst}) # TODO: Check
+        y_0 = fc.optimise_age_t(V_0, m, n, k) # TODO: This result does not make sense, write other average age function?
+        y_0_i_lst.append(y_0)
+    y_0_i = pd.DataFrame({"Country":V_0_i["Country"], "Model age": y_0_i_lst})
     return y_0_i
 
 
@@ -191,7 +187,7 @@ def compare_model(y_0 = 0, T = 100):
             pandas.DataFrame: DataFrame containing growth paths for each country.
         """
     # Hence, the outcomes should be simulating the same results as reported in the papers
-    V_0_i= read_initial_values(approach="Thomas")
+    V_0_i, y_o_i_none= read_initial_values(approach="Thomas")
     # Create an empty array which will be filled with each country's path. It has as columns the countrys and
     # as rows the time steps
     V_i = []
@@ -211,7 +207,7 @@ def compare_model(y_0 = 0, T = 100):
 # Set the approach
 path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
 approaches = ["Katarina2016", "Katarina2018", "Thomas"]
-approach = approaches[0]
+approach = approaches[1]
 
 # with each approaches initial values
 #V_path  = recreate_model()
