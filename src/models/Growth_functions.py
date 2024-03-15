@@ -69,7 +69,6 @@ def Growth_Thomas_t(V_t, country):
     # gross increment and shares
     Species_Shares_c, V_gross_c, V_gross_species_c = read_params_one_country_Thomas(country)
     # Read in the calculated parameters V:pot and V_lim (species specific)
-    # TODO: Solve Issue with missing "Other" species in area shares and with missing species between estimated Params (V-pot) and species shares!
     data_pot_lim_all = pd.read_excel(path_data + "\\Data Thomas.xlsx", sheet_name=0, decimal=',', index_col="Species")
     lst = ["Beech", "Oak", "Spruce", "Fir", "Pine"]
     data_pot_lim = data_pot_lim_all.loc[lst]    # sort and harmonize shares and species data
@@ -77,13 +76,13 @@ def Growth_Thomas_t(V_t, country):
     V_pot_c =data_pot_lim[["Species", "A"]]
     V_lim_c =V_pot_c.copy()
     V_lim_c["Lim"] = V_lim_c["A"] * 0.83
-    V_pot_c_array = np.asarray(V_pot_c["A"])
+    V_pot_c_array = np.asarray(V_pot_c["A"]) #
     V_lim_c_array = np.asarray(V_lim_c["Lim"])
     # The function calculates the growth in one country in one year
     # First, create an empty Array that will hold every species growth
     G_t_i = np.zeros(len(Species_Shares_c))
     # Now I loop over all of the species to calculate species-specific growth in one country
-    for i in range(0, len(Species_Shares_c)): # TODO: delete -1 when all species available
+    for i in range(0, len(Species_Shares_c)):
         V_t_i = Species_Shares_c["Shares"][i] * V_t          # Here I use the shares of each species in the country to get the current species volume
 
         G_t_i[i] = V_gross_species_c["Gross"][i] * (V_pot_c_array[i] - V_t_i)/(V_pot_c_array[i] - V_lim_c_array[i])
@@ -96,6 +95,13 @@ def Growth_Thomas_t(V_t, country):
 
 # Katarina 2016
 def extract_params_Katarina2016(country):  # TODO: reduce number of calls of this functoin
+    """
+
+    :param country: (str): Name of country
+    :return:
+        m,n,k (tuple): parameters
+    """
+    # TODO: Handle the missing countries (in simulation?)
     data = pd.read_excel(path_data + "\\Data Katarina 2016.xlsx", sheet_name=0, decimal=',')
     # extract parameters from data for the right country
     params_c = data[data["Country"] == country]

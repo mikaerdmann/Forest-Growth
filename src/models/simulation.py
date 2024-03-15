@@ -145,6 +145,7 @@ def read_initial_values(approach):
         data = pd.read_excel(path_data + "\\Data Thomas.xlsx", sheet_name=1, decimal=',')
         # return a df with two colums: Country and Volume
         V_0_i = data.loc[:, ["Country", "Volume"]]
+
         # Caluclate starting average age using the function from 2016
         y_0_i = calculate_y_0s_other(V_0_i)
         return V_0_i, y_0_i
@@ -206,16 +207,28 @@ def compare_model(y_0 = 0, T = 100):
     V_i_df = V_i_df.transpose()
     return V_i_df
 
-
+### TEST ########
 # Set the approach
 path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
 approaches = ["Katarina2016", "Katarina2018", "Thomas"]
-approach = approaches[0]
 
 # with each approaches initial values
-V_path  = recreate_model()
+# Katarina 2016
+approach = approaches[0]
+V_path_recreate_K2016 = recreate_model()
+# Katarina 2018
+approach = approaches[1] # TODO: Here the calculation of the inital y_0s is not possible currently due
+#TODO: to missing country parameters -> I need to also harmonize between K2016 and K2018
+V_path_recreate_K2018 = recreate_model()
+# Thomas
+approach = approaches[2]
+V_path_recreate_thomas = recreate_model()
 
 # with Thomas initial values
-#V_path = compare_model()
 
-
+# approach = approaches[0]
+# V_path_compare_K2016 = compare_model()
+# approach = approaches[1]
+# V_path_compare_K2018 = compare_model()
+# approach = approaches[2]
+# V_path_compare_Thomas = compare_model()
