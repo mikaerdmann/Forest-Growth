@@ -171,7 +171,10 @@ def recreate_model(y_0 = 0, T = 100):
         c = V_0_i["Country"][i]
         V0 = V_0_i["Volume"][i]
         # V will be a column in the Dataframe with the column name c
-        y_0 = y_0_i["Model Age"][i]
+        if approach == "Katarina2016":
+            y_0 = y_0_i["Model Age"][i]
+        else:
+            y_0 = 0
         V = stock_over_time_i(country= c,T=T, V0=V0, y_0=y_0)
         V_i.append(V.tolist()) # TODO why is there nan values??
     V_i_df = pd.DataFrame(V_i)
@@ -214,21 +217,20 @@ approaches = ["Katarina2016", "Katarina2018", "Thomas"]
 
 # with each approaches initial values
 # Katarina 2016
-approach = approaches[0]
-V_path_recreate_K2016 = recreate_model()
-# Katarina 2018
-approach = approaches[1] # TODO: Here the calculation of the inital y_0s is not possible currently due
-#TODO: to missing country parameters -> I need to also harmonize between K2016 and K2018
-V_path_recreate_K2018 = recreate_model()
-# Thomas
-approach = approaches[2]
-V_path_recreate_thomas = recreate_model()
-
+# approach = approaches[0]
+# V_path_recreate_K2016 = recreate_model()
+# # Katarina 2018
+# approach = approaches[1]
+# V_path_recreate_K2018 = recreate_model()
+# # Thomas
+# approach = approaches[2]
+# V_path_recreate_thomas = recreate_model()
+#
 # with Thomas initial values
 
-# approach = approaches[0]
-# V_path_compare_K2016 = compare_model()
-# approach = approaches[1]
-# V_path_compare_K2018 = compare_model()
-# approach = approaches[2]
-# V_path_compare_Thomas = compare_model()
+approach = approaches[0]
+V_path_compare_K2016 = compare_model()
+approach = approaches[1]
+V_path_compare_K2018 = compare_model()
+approach = approaches[2]
+V_path_compare_Thomas = compare_model()

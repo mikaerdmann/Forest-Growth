@@ -90,7 +90,7 @@ def Growth_Thomas_t(V_t, country):
     # Then, I add it together to calculate national growth
     G_t = sum(G_t_i)
     # TODO: add species in df in G_t_i
-    return G_t, G_t_i
+    return G_t
 
 
 # Katarina 2016
@@ -208,5 +208,5 @@ country = "Belgium"
 sp, Vgc, VgSc= read_params_one_country_Thomas(country)
 
 # Test Growth_Thomas_t()
-G, G_i = Growth_Thomas_t(2100, country)
+G= Growth_Thomas_t(2100, country)
 
