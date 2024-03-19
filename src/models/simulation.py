@@ -110,7 +110,7 @@ def calculate_y_0s_other(V_0_i):
         m,n,k = fc.extract_params_Katarina2016(country)
         y_0 = fc.optimise_age_t(V_0, m, n, k) # TODO: This result does not make sense, write other average age function?
         y_0_i_lst.append(y_0)
-    y_0_i = pd.DataFrame({"Country":V_0_i["Country"], "Model age": y_0_i_lst})
+    y_0_i = pd.DataFrame({"Country":V_0_i["Country"], "Model Age": y_0_i_lst})
     return y_0_i
 
 
@@ -161,6 +161,7 @@ def recreate_model(y_0 = 0, T = 100):
         Returns:
             pandas.DataFrame: DataFrame containing growth paths for each country.
         """
+
     # Hence, the outcomes should be simulating the same results as reported in the papers
     V_0_i, y_0_i= read_initial_values(approach=approach)
     # Create an empty array which will be filled with each country's path. It has as columns the countrys and
@@ -180,6 +181,8 @@ def recreate_model(y_0 = 0, T = 100):
     V_i_df = pd.DataFrame(V_i)
     V_i_df[0] = V_0_i["Country"]
     V_i_df = V_i_df.transpose()
+    V_i_df.columns = V_i_df.iloc[0]
+    V_i_df = V_i_df.drop([0,T])
     return V_i_df
 
 def compare_model(y_0 = 0, T = 100):
@@ -193,8 +196,9 @@ def compare_model(y_0 = 0, T = 100):
         Returns:
             pandas.DataFrame: DataFrame containing growth paths for each country.
         """
+
     # Hence, the outcomes should be simulating the same results as reported in the papers
-    V_0_i, y_o_i_none= read_initial_values(approach="Thomas")
+    V_0_i, y_0_i= read_initial_values(approach="Thomas")
     # Create an empty array which will be filled with each country's path. It has as columns the countrys and
     # as rows the time steps
     V_i = []
@@ -203,34 +207,56 @@ def compare_model(y_0 = 0, T = 100):
         c = V_0_i["Country"][i]
         V0 = V_0_i["Volume"][i]
         # V will be a column in the Dataframe with the column name c
-        V = stock_over_time_i(country= c,T=T, V0=V0)
+        if approach == "Katarina2016":
+            y_0 = y_0_i["Model Age"][i]
+        else:
+            y_0 = 0
+        V = stock_over_time_i(country= c,T=T, V0=V0, y_0= y_0)
         V_i.append(V.tolist())
     V_i_df = pd.DataFrame(V_i)
     V_i_df[0] = V_0_i["Country"]
     V_i_df = V_i_df.transpose()
+    #V_i_df.set_index(V_i_df.iloc[0].values)
+    V_i_df.columns = V_i_df.iloc[0]
+    V_i_df = V_i_df.drop([0,T])
     return V_i_df
 
-### TEST ########
-# Set the approach
+### Simulate the functions!
+
+def run_recreate_all(T = 100):
+    global path_data
+    path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
+
+    approaches = ["Katarina2016", "Katarina2018", "Thomas"]
+    global approach
+    #with each approaches initial values
+    #Katarina 2016
+    approach = approaches[0]
+    V_path_recreate_K2016 = recreate_model(T= T)
+    # Katarina 2018
+    approach = approaches[1]
+    V_path_recreate_K2018 = recreate_model(T = T)
+    # Thomas
+    approach = approaches[2]
+    V_path_recreate_thomas = recreate_model(T = T)
+
+    return V_path_recreate_K2016, V_path_recreate_K2018, V_path_recreate_thomas
+
+
+def run_compare_all(T = 100):
+    global path_data
+    path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
+    approaches = ["Katarina2016", "Katarina2018", "Thomas"]
+    global approach
+    approach = approaches[0]
+    V_path_compare_K2016 = compare_model( T = T)
+    approach = approaches[1]
+    V_path_compare_K2018 = compare_model(T = T)
+    approach = approaches[2]
+    V_path_compare_Thomas = compare_model(T = T)
+    return V_path_compare_K2016, V_path_compare_K2018, V_path_compare_Thomas
+
 path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
-approaches = ["Katarina2016", "Katarina2018", "Thomas"]
 
-# with each approaches initial values
-# Katarina 2016
-# approach = approaches[0]
-# V_path_recreate_K2016 = recreate_model()
-# # Katarina 2018
-# approach = approaches[1]
-# V_path_recreate_K2018 = recreate_model()
-# # Thomas
-# approach = approaches[2]
-# V_path_recreate_thomas = recreate_model()
-#
-# with Thomas initial values
-
-approach = approaches[0]
-V_path_compare_K2016 = compare_model()
-approach = approaches[1]
-V_path_compare_K2018 = compare_model()
-approach = approaches[2]
-V_path_compare_Thomas = compare_model()
+approach = "Thomas"
+V_thomas = compare_model()
