@@ -260,3 +260,4 @@ path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
 
 approach = "Thomas"
 V_thomas = compare_model()
+V_thomas_recreate = recreate_model()

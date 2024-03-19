@@ -43,7 +43,7 @@ def read_params_one_country_Thomas(country):
     data_c = data_c.rename(columns={"Norway spruce": "Spruce"})
     lst = ["Beech", "Oak", "Spruce", "Fir", "Pine"] # included in all data
     Species_area_c = data_c.loc[:,lst]
-    Species_area_c.loc[:,"Total"] = Species_area_c.sum(axis=1)
+    Species_area_c.loc[:,"Total"] = Species_area_c.sum(axis=1, min_count = 1) # TODO: figure out whether to make assumptions for the countries with only 1-2 species shares
     areas_shares = np.asarray(Species_area_c.loc[:,lst])/np.asarray(Species_area_c.loc[:,'Total'])
     # I calulate the shares by calculating the share of each species of the Total area
     Species_Shares_c = pd.DataFrame({"Species": Species_area_c.loc[:,lst].columns.tolist(), "Shares": areas_shares.reshape(5)})
@@ -83,13 +83,13 @@ def Growth_Thomas_t(V_t, country):
     G_t_i = np.zeros(len(Species_Shares_c))
     # Now I loop over all of the species to calculate species-specific growth in one country
     for i in range(0, len(Species_Shares_c)):
-        # TODO: To avoid empty countries, add an if statement that will give equal shares to all species, if no shares are available
+        # TODO:
         V_t_i = Species_Shares_c["Shares"][i] * V_t          # Here I use the shares of each species in the country to get the current species volume
 
         G_t_i[i] = V_gross_species_c["Gross"][i] * (V_pot_c_array[i] - V_t_i)/(V_pot_c_array[i] - V_lim_c_array[i])
 
     # Then, I add it together to calculate national growth
-    G_t = sum(G_t_i)
+    G_t =np.nansum(G_t_i)
     # TODO: add species in df in G_t_i
     return G_t
 
@@ -205,9 +205,9 @@ def Growth_Katarina2018(V_t, country):
 
 
 # test read_params_one_country()
-country = "Belgium"
-sp, Vgc, VgSc= read_params_one_country_Thomas(country)
+#country = "Belgium"
+#sp, Vgc, VgSc= read_params_one_country_Thomas(country)
 
 # Test Growth_Thomas_t()
-G= Growth_Thomas_t(2100, country)
+#G= Growth_Thomas_t(2100, country)
 
