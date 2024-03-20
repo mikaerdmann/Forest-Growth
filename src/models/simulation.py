@@ -256,8 +256,8 @@ def run_compare_all(T = 100):
     V_path_compare_Thomas = compare_model(T = T)
     return V_path_compare_K2016, V_path_compare_K2018, V_path_compare_Thomas
 
-path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
+#path_data = "C:\\Users\\mikae\\Documents\\Aarhus Internship\\model\\data\\raw"
 
-approach = "Thomas"
-V_thomas = compare_model()
-V_thomas_recreate = recreate_model()
+#approach = "Thomas"
+#V_thomas = compare_model()
+#V_thomas_recreate = recreate_model()

@@ -39,16 +39,30 @@ def read_params_one_country_Thomas(country):
        """
     # This function reads in all of the country-specific data (species shares and gross incremement)
     data = pd.read_excel(path_data+"\\Data Thomas.xlsx", sheet_name=1, decimal=',')
-    data_c = data[data["Country"] == country]
+    # Here I include the assumptions about missing area shares
+    if country == "Malta":
+        country_shares = "Greece"
+    if country == "Luxembourg":
+        country_shares = "Belgium"
+    if country == "Cyprus":
+        country_shares = "Greece"
+    if country == "Slovenia":
+        country_shares = "Italy"
+    else:
+        country_shares = country
+    # To insert the missing countries I need to take the country_shares area shares and use the "Total"
+    data_c = data[data["Country"] == country_shares]
+    data_V = data[data["Country"] == country]
     data_c = data_c.rename(columns={"Norway spruce": "Spruce"})
-    lst = ["Beech", "Oak", "Spruce", "Fir", "Pine"] # included in all data
+    lst = ["Beech", "Oak", "Spruce", "Fir", "Pine"]  # included in all data
+    data_V = data_c.rename(columns={"Norway spruce": "Spruce"})
     Species_area_c = data_c.loc[:,lst]
     Species_area_c.loc[:,"Total"] = Species_area_c.sum(axis=1, min_count = 1) # TODO: figure out whether to make assumptions for the countries with only 1-2 species shares
     areas_shares = np.asarray(Species_area_c.loc[:,lst])/np.asarray(Species_area_c.loc[:,'Total'])
     # I calulate the shares by calculating the share of each species of the Total area
     Species_Shares_c = pd.DataFrame({"Species": Species_area_c.loc[:,lst].columns.tolist(), "Shares": areas_shares.reshape(5)})
     # Now I calculate the species shares of the gross increment
-    V_gross_c = float(data_c.loc[:, 'Gross'])  # TODO find a way to do this wihtout the future warning
+    V_gross_c = float(data_V.loc[:, 'Gross'])  # TODO find a way to do this wihtout the future warning
     V_gross_species_c = pd.DataFrame(
         {"Species": Species_area_c.loc[:,lst].columns.tolist(), "Gross": areas_shares.reshape(5) * V_gross_c})
     return Species_Shares_c, V_gross_c, V_gross_species_c
