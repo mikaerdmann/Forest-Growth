@@ -97,7 +97,7 @@ def Growth_Thomas_t(V_t, country):
     G_t_i = np.zeros(len(Species_Shares_c))
     # Now I loop over all of the species to calculate species-specific growth in one country
     for i in range(0, len(Species_Shares_c)):
-        # TODO:
+        #
         V_t_i = Species_Shares_c["Shares"][i] * V_t          # Here I use the shares of each species in the country to get the current species volume
 
         G_t_i[i] = V_gross_species_c["Gross"][i] * (V_pot_c_array[i] - V_t_i)/(V_pot_c_array[i] - V_lim_c_array[i])
@@ -185,8 +185,6 @@ def optimise_age_t(V_t, m,n,k):
         return y_t
     else:
         return y_t
-
-
 
 
 # Katarina 2018
