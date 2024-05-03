@@ -1,6 +1,9 @@
 """
+Author: Mika Erdmann
+March 2024
+Supervisor: Katarina Elofsson, Aahus University
 
-
+Visualize differen Growth functions
 """
 import matplotlib
 import pandas as pd
@@ -20,16 +23,16 @@ V_path_compare_K2016, V_path_compare_K2018, V_path_compare_Thomas = sim.run_comp
 fig, axes = plt.subplots(nrows=3, ncols=1)
 
 axes[0].plot(V_path_compare_K2016, linewidth = 1)
-axes[0].set_ylabel('Time step')  # Add a y-label to the axes.
+axes[0].set_ylabel('Biomass[m^3]')  # Add a y-label to the axes.
 axes[0].set_title('Katarina 2016')
 
 axes[1].plot(V_path_compare_K2018, linewidth = 1)
-axes[1].set_ylabel('Time step')  # Add a y-label to the axes.
+axes[1].set_ylabel('Biomass[m^3]')  # Add a y-label to the axes.
 axes[1].set_title('Katarina 2018')
 
 axes[2].plot(V_path_compare_Thomas, linewidth = 1)
-axes[2].set_xlabel('Volume')  # Add an x-label to the axes.
-axes[2].set_ylabel('Time step')  # Add a y-label to the axes.
+axes[2].set_xlabel('Time')  # Add an x-label to the axes.
+axes[2].set_ylabel('Biomass[m^3]')  # Add a y-label to the axes.
 axes[2].set_title('Thomas')
 
 plt.show()
