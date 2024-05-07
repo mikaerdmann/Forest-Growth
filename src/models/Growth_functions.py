@@ -94,17 +94,23 @@ def Growth_Thomas_t(V_t, country):
     V_lim_c_array = np.asarray(V_lim_c["Lim"])
     # The function calculates the growth in one country in one year
     # First, create an empty Array that will hold every species growth
-    G_t_i = np.zeros(len(Species_Shares_c))
+    #G_t_i = np.zeros(len(Species_Shares_c))
     # Now I loop over all of the species to calculate species-specific growth in one country
-    for i in range(0, len(Species_Shares_c)):
+    #for i in range(0, len(Species_Shares_c)):
         #
-        V_t_i = Species_Shares_c["Shares"][i] * V_t          # Here I use the shares of each species in the country to get the current species volume
-
-        G_t_i[i] = V_gross_species_c["Gross"][i] * (V_pot_c_array[i] - V_t_i)/(V_pot_c_array[i] - V_lim_c_array[i])
+    #    V_t_i = Species_Shares_c["Shares"][i] * V_t          # Here I use the shares of each species in the country to get the current species volume
+    #    G_t_i[i] = V_gross_species_c["Gross"][i] * (V_pot_c_array[i] - V_t_i)/(V_pot_c_array[i] - V_lim_c_array[i])
 
     # Then, I add it together to calculate national growth
-    G_t =np.nansum(G_t_i)
-    # TODO: add species in df in G_t_i
+    #G_t =np.nansum(G_t_i)
+    # TODO: code average national accumulation parameeter, model growth
+
+    # weighted average of V_pot and V_lim by species
+    Av_V_Pot_c = np.nansum(Species_Shares_c["Shares"] * V_pot_c_array)
+    Av_V_lim_c = 0.83 * Av_V_Pot_c
+    # growth function
+    G_t = V_gross_c * (Av_V_Pot_c - V_t)/(Av_V_Pot_c - Av_V_lim_c)
+
     return G_t
 
 
@@ -217,9 +223,9 @@ def Growth_Katarina2018(V_t, country):
 
 
 # test read_params_one_country()
-#country = "Belgium"
+country = "Latvia"
 #sp, Vgc, VgSc= read_params_one_country_Thomas(country)
 
 # Test Growth_Thomas_t()
-#G= Growth_Thomas_t(2100, country)
+G= Growth_Thomas_t(2100, country)
 
